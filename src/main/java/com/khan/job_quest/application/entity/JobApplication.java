@@ -1,5 +1,6 @@
 package com.khan.job_quest.application.entity;
 
+import com.khan.job_quest.common.entity.BaseEntity;
 import com.khan.job_quest.jobs.entity.Job;
 import com.khan.job_quest.users.entity.User;
 import jakarta.persistence.*;
@@ -12,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "job_applications")
-public class JobApplication {
+public class JobApplication extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

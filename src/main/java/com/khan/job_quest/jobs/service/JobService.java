@@ -28,6 +28,7 @@ public class JobService {
                 .location(request.getLocation())
                 .salary(request.getSalary())
                 .employer(employer)
+                .companyName(request.getCompanyName())
                 .build();
 
         Job savedJob = jobRepository.save(job);
