@@ -12,6 +12,8 @@ import com.khan.job_quest.users.entity.Role;
 import com.khan.job_quest.users.entity.User;
 import com.khan.job_quest.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,5 +90,12 @@ public class AuthService {
                 .token(token)
                 .userDetailsDto(userDetailsDto)
                 .build();
+    }
+
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

@@ -29,6 +29,11 @@ public class GlobalExceptionHandler {
         return buildResponse(ex, HttpStatus.NOT_FOUND, request); // 404
     }
 
+    @ExceptionHandler(PermissionDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handlePermissionDeniedException(PermissionDeniedException ex, HttpServletRequest request) {
+        return buildResponse(ex, HttpStatus.UNAUTHORIZED, request); // 401
+    }
+
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiErrorResponse> handleInvalidCredentials(InvalidCredentialsException ex, HttpServletRequest request) {
         return buildResponse(ex, HttpStatus.UNAUTHORIZED, request); // 401
