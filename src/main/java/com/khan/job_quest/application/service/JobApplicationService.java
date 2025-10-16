@@ -2,6 +2,7 @@ package com.khan.job_quest.application.service;
 
 import com.khan.job_quest.application.dto.JobApplicationRequest;
 import com.khan.job_quest.application.dto.JobApplicationResponse;
+import com.khan.job_quest.application.dto.UpdateApplicationStatusRequest;
 import com.khan.job_quest.application.entity.ApplicationStatus;
 import com.khan.job_quest.application.entity.JobApplication;
 import com.khan.job_quest.application.repository.JobApplicationRepository;
@@ -78,11 +79,11 @@ public class JobApplicationService {
                 .map(this::mapToJobApplicationResponse);
     }
 
-    public JobApplicationResponse updateJobApplicationStatus(Long id, ApplicationStatus status) {
+    public JobApplicationResponse updateJobApplicationStatus(Long id, UpdateApplicationStatusRequest request) {
         JobApplication jobApplication = jobApplicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job application not found with id: " + id));
 
-        jobApplication.setStatus(status);
+        jobApplication.setStatus(request.getStatus());
 
         JobApplication updatedApplication = jobApplicationRepository.save(jobApplication);
 
