@@ -67,7 +67,7 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYER') or hasRole('JOB_SEEKER')")
     public ResponseEntity<ApiResponse<JobResponse>> getJobById(@PathVariable Long id) {
         JobResponse jobs = jobService.getJobById(id);
 
@@ -90,6 +90,27 @@ public class JobController {
                 HttpStatus.OK.value(),
                 "Job deleted successfully",
                 null,
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('EMPLOYER') or hasRole('JOB_SEEKER')")
+    public ResponseEntity<ApiResponse<Page<JobResponse>>> searchJobs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) Integer minSalary,
+            @RequestParam(required = false) Integer maxSalary,
+            Pageable pageable
+    ) {
+        Page<JobResponse> jobs = jobService.searchJobs(keyword, location, minSalary, maxSalary, pageable);
+
+        ApiResponse<Page<JobResponse>> response = new ApiResponse<>(
+                HttpStatus.OK.value(),
+                "Jobs retrieved successfully",
+                jobs,
                 LocalDateTime.now()
         );
 

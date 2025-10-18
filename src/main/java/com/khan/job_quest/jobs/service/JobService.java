@@ -7,10 +7,12 @@ import com.khan.job_quest.jobs.dto.JobRequest;
 import com.khan.job_quest.jobs.dto.JobResponse;
 import com.khan.job_quest.jobs.entity.Job;
 import com.khan.job_quest.jobs.repository.JobRepository;
+import com.khan.job_quest.jobs.spec.JobSpecification;
 import com.khan.job_quest.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -84,6 +86,16 @@ public class JobService {
         }
 
         jobRepository.delete(job);
+    }
+
+    public Page<JobResponse> searchJobs(String keyword, String location, Integer minSalary, Integer maxSalary, Pageable pageable) {
+        Specification<Job> spec = JobSpecification.safeAnd(
+                JobSpecification.hasKeyword(keyword),
+                JobSpecification.hasLocation(location),
+                JobSpecification.withinSalaryRange(minSalary, maxSalary)
+        );
+
+        return jobRepository.findAll(spec, pageable).map(this::mapToJobResponse);
     }
 
     private JobResponse mapToJobResponse(Job job) {
