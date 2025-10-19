@@ -10,10 +10,15 @@ import com.khan.job_quest.jobs.repository.JobRepository;
 import com.khan.job_quest.jobs.spec.JobSpecification;
 import com.khan.job_quest.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +65,6 @@ public class JobService {
 
         return mapToJobResponse(updatedJob);
     }
-
 
     public Page<JobResponse> getAllJobs(Pageable pageable) {
         return jobRepository.findAll(pageable).map(this::mapToJobResponse);
