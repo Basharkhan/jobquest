@@ -5,6 +5,7 @@ import com.khan.job_quest.application.dto.JobApplicationResponse;
 import com.khan.job_quest.application.dto.UpdateApplicationStatusRequest;
 import com.khan.job_quest.application.entity.ApplicationStatus;
 import com.khan.job_quest.application.entity.JobApplication;
+import com.khan.job_quest.application.event.JobApplicationEvent;
 import com.khan.job_quest.application.repository.JobApplicationRepository;
 import com.khan.job_quest.auth.service.AuthService;
 import com.khan.job_quest.common.exception.PermissionDeniedException;
@@ -14,6 +15,7 @@ import com.khan.job_quest.jobs.entity.Job;
 import com.khan.job_quest.jobs.repository.JobRepository;
 import com.khan.job_quest.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class JobApplicationService {
     private final JobApplicationRepository jobApplicationRepository;
     private final JobRepository jobRepository;
     private final AuthService authService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public JobApplicationResponse createJobApplication(Long jobId, JobApplicationRequest request) throws IOException {
         User applicant = authService.getAuthenticatedUser();
@@ -59,6 +62,9 @@ public class JobApplicationService {
                 .build();
 
         JobApplication savedApplication = jobApplicationRepository.save(jobApplication);
+
+        // trigger email event
+        applicationEventPublisher.publishEvent(new JobApplicationEvent(this, savedApplication));
 
         return mapToJobApplicationResponse(savedApplication);
     }
