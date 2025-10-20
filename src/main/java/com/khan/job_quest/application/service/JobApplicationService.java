@@ -13,6 +13,7 @@ import com.khan.job_quest.common.exception.ResourceAlreadyExistsException;
 import com.khan.job_quest.common.exception.ResourceNotFoundException;
 import com.khan.job_quest.jobs.entity.Job;
 import com.khan.job_quest.jobs.repository.JobRepository;
+import com.khan.job_quest.notofication.service.NotificationService;
 import com.khan.job_quest.users.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -32,6 +33,7 @@ public class JobApplicationService {
     private final JobRepository jobRepository;
     private final AuthService authService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final NotificationService notificationService;
 
     public JobApplicationResponse createJobApplication(Long jobId, JobApplicationRequest request) throws IOException {
         User applicant = authService.getAuthenticatedUser();
@@ -65,6 +67,13 @@ public class JobApplicationService {
 
         // trigger email event
         applicationEventPublisher.publishEvent(new JobApplicationEvent(this, savedApplication));
+
+        // notification for employer
+        notificationService.createNotification(
+                job.getEmployer(),
+                "New Job Application",
+                applicant.getName() + " applied for your job: " + job.getTitle()
+        );
 
         return mapToJobApplicationResponse(savedApplication);
     }
